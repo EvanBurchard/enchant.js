@@ -1236,6 +1236,16 @@ enchant.EventTarget = enchant.Class.create({
          * loading will begin and the loading screen will be displayed.
          */
         start: function() {
+            var onloadTimeSetter = function() {
+                this.currentTime = this.getTime();
+                this.removeEventListener('load',onloadTimeSetter);
+                this._intervalID = window.setInterval(function() {
+                    core._tick();
+                }, 1000 / this.fps);
+                this.running = true;
+            };
+            this.addEventListener('load',onloadTimeSetter);
+            
             if (this._intervalID) {
                 window.clearInterval(this._intervalID);
             } else if (this._assets.length) {
@@ -1285,15 +1295,6 @@ enchant.EventTarget = enchant.Class.create({
             } else {
                 this.dispatchEvent(new enchant.Event('load'));
             }
-            var onloadTimeSetter = function() {
-                this.currentTime = this.getTime();
-                this.removeEventListener('load',onloadTimeSetter);
-            };
-            this.addEventListener('load',onloadTimeSetter);
-            this._intervalID = window.setInterval(function() {
-                core._tick();
-            }, 1000 / this.fps);
-            this.running = true;
         },
         /**
          * Begin core debug mode.
@@ -4652,7 +4653,7 @@ enchant.Timeline = enchant.Class.create(enchant.EventTarget, {
      * @private
      */
     _activateTimeline: function() {
-        if (!this._activated) {
+        if (!this._activated && !this.paused) {
             this.node.addEventListener("enterframe", this._nodeEventListener);
             this._activated = true;
         }
