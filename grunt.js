@@ -22,8 +22,11 @@ module.exports = function(grunt) {
                 mixing: ['dev/header.js', grunt.file.expand('dev/src/*.js').filter(function(file){ return !file.match(/_/); }),'dev/plugins/mixing.enchant.js'],
                 edge: ['dev/header.js', grunt.file.expand('dev/src/*.js').filter(function(file){ return !file.match(/_/); }),'dev/plugins/mixing.enchant.js', 'dev/plugins/edge.enchant.js'] 
             },
-            qunit: {
+            qunit_old: {
                 files: ['tests/qunit/*/*.html']
+            },
+            qunit: {
+                files: ['tests/qunit/edge.enchant.js/*.html']
             },
             concat: {
                 dist: {
@@ -80,6 +83,14 @@ module.exports = function(grunt) {
                         'dev/plugins/*.js',
                     ],
                     tasks: 'lint:core concat min qunit exec:lang'
+                },
+                edge: {
+                    files: [
+                        'dev/src/*.js',
+                        'dev/plugins/edge.enchant.js',
+                        'dev/plugins/mixing.enchant.js'
+                    ],
+                    tasks: 'lint:core lint:mixing lint:edge qunit concat min exec:lang'
                 }
             },
             jshint: {
